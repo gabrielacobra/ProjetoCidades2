@@ -17,8 +17,7 @@ namespace WebServicesCidades.Models
             List<Cidades> cidades = new List<Cidades>(); //criando uma lista e populando com os dados do banco
             try
             {
-                con = new SqlConnection();
-                con.ConnectionString = conexao;
+                con = new SqlConnection(conexao);
                 con.Open();
                 cmd = new SqlCommand();
                 cmd.Connection = con;
@@ -51,31 +50,108 @@ namespace WebServicesCidades.Models
             return cidades;
         }
 
-        public bool Cadastrar(Cidades cidades){
+        public bool Cadastrar(Cidades cidades)
+        {
             bool resultado = false;
-            try {
+            try
+            {   
                 con = new SqlConnection(conexao);
                 con.Open();
                 cmd = new SqlCommand();
+                cmd.Connection = con;
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandText = "insert into cidades(nome,estado,habitantes) values(@n,@e,@h)";
-                cmd.Parameters.AddWithValue("@n",cidades.Nome);
-                cmd.Parameters.AddWithValue("@e",cidades.Estado);
-                cmd.Parameters.AddWithValue("@h",cidades.Habitantes);
+                cmd.Parameters.AddWithValue("@n", cidades.Nome);
+                cmd.Parameters.AddWithValue("@e", cidades.Estado);
+                cmd.Parameters.AddWithValue("@h", cidades.Habitantes);
 
                 int r = cmd.ExecuteNonQuery();
-                if(r > 0)
-                resultado = true;
+                if (r > 0)
+                    resultado = true;
 
                 cmd.Parameters.Clear();
             }
-            catch(SqlException se){
+            catch (SqlException se)
+            {
                 throw new Exception(se.Message);
             }
-            catch(Exception ex){
+            catch (Exception ex)
+            {
                 throw new Exception(ex.Message);
             }
-            finally{
+            finally
+            {
+                con.Close();
+            }
+            return resultado;
+        }
+
+        public bool Atualizar(Cidades cidades)
+        {
+            bool resultado = false;
+
+            try
+            {
+                con = new SqlConnection(conexao);
+                con.Open();
+                cmd = new SqlCommand();
+                cmd.Connection = con;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "update cidades set nome=@n, estado=@e, habitantes=@h where id=@id";
+                cmd.Parameters.AddWithValue("@n", cidades.Nome);
+                cmd.Parameters.AddWithValue("@e", cidades.Estado);
+                cmd.Parameters.AddWithValue("@h", cidades.Habitantes);
+                cmd.Parameters.AddWithValue("@id", cidades.Id);
+                int r = cmd.ExecuteNonQuery();
+                if (r > 0)
+                    resultado = true;
+
+                cmd.Parameters.Clear();
+            }
+            catch (SqlException se)
+            {
+                throw new Exception(se.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                con.Close();
+            }
+            return resultado;
+        }
+
+        public bool Deletar(int Id)
+        {
+            bool resultado = false;
+
+            try
+            {
+                con = new SqlConnection(conexao);
+                con.Open();
+                cmd = new SqlCommand();
+                cmd.Connection = con;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "delete from cidades where id=@id";
+                cmd.Parameters.AddWithValue("@id", Id);
+                int r = cmd.ExecuteNonQuery();
+                if (r > 0)
+                    resultado = true;
+
+                cmd.Parameters.Clear();
+            }
+            catch (SqlException se)
+            {
+                throw new Exception(se.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
                 con.Close();
             }
             return resultado;
